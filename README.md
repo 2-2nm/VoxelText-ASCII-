@@ -19,7 +19,7 @@ A desktop app that turns photos, videos, live games and **3D wireframe models** 
 
 - **Voxel mode (new):** a fourth tab that draws 3D wireframe models as ASCII, with depth shading
 - **Built-in editor:** edit, draw and paint models right in the preview, with undo
-- **VXL files:** save and load your models as `.vxl`
+- **VXL files:** save and load your models as `.vxl`, and use them in [voxelfetch](https://github.com/2-2nm/voxelfetch)
 - **Free camera:** orbit, pan, zoom and fly around the model
 - **Modular UI:** the interface is split into per-mode decks (`ui/decks/`), and a new `core/uidebug.py` can profile UI stalls
 - **Build script renamed** to `build.bat`
@@ -37,6 +37,22 @@ Pick a preset (`torus`, `cube`, `pyramid`, `starship`, `blank`) or load a `.vxl`
 - **Camera:** `W`/`S` move in and out, `A`/`D` strafe, `Q`/`E` down and up (hold `Shift` for speed). Middle-drag orbits, `Shift`+middle-drag pans, scroll zooms toward the mouse.
 - **Spin:** a slider sets the spin direction and speed. `Fit` resets the view and `Ctrl+Z` undoes.
 - **Look:** the same colors, styles and glyph sets as the other modes.
+
+### Use your models in voxelfetch
+
+A `.vxl` file made here also works in [**voxelfetch**](https://github.com/2-2nm/voxelfetch), my terminal system fetch that shows your system info next to a spinning 3D ASCII model. Build a model in Voxel mode, click **Save VXL**, then pass the file to voxelfetch:
+
+```powershell
+voxelfetch path\to\model.vxl
+```
+
+To make it the default, set it in your PowerShell profile (`notepad $PROFILE`):
+
+```powershell
+$env:VOXELFETCH_MODEL = "C:\path\to\model.vxl"
+```
+
+This repo also ships ready-made models in the [`vxl models`](vxl%20models) folder.
 
 ## Game Stream
 
