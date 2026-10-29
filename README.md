@@ -10,8 +10,8 @@
 A desktop app that turns photos, videos, live games and **3D wireframe models** into ASCII art, rendered in real time on the GPU with OpenGL shaders (ModernGL).
 
 <p align="center">
-  <img src="assets/voxel-demo.gif" width="640" alt="Voxel mode: a spinning 3D model drawn in ASCII">
-</p><img width="800" height="500" alt="download (2)" src="https://github.com/user-attachments/assets/2c9e56ea-c956-425b-8a12-49d314595bd6" />
+  <img width="800" height="500" alt="Voxel mode: a spinning 3D model drawn in ASCII" src="https://github.com/user-attachments/assets/2c9e56ea-c956-425b-8a12-49d314595bd6" />
+</p>
 
 <p align="center"><i>Voxel mode: a 3D model spinning in pure ASCII.</i></p>
 
