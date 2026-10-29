@@ -181,6 +181,7 @@ def get_window_title(hwnd):
 
 
 class GameCapture:
+
     def __init__(self, hwnd=None, target_title_keyword="Minecraft"):
         self.hwnd = hwnd
         self.target_keyword = target_title_keyword
@@ -283,6 +284,7 @@ class GameCapture:
 
 
 class FrameSource:
+
     def __init__(self, hwnd, prefer_wgc=True, log_cb=None):
         self.hwnd = hwnd
         self.prefer_wgc = prefer_wgc
@@ -338,6 +340,7 @@ class FrameSource:
         except Exception:
             self._log("windows-capture not installed (pip install windows-capture); using slow PrintWindow capture.", "warn")
             return False
+
         try:
             sys.setswitchinterval(0.001)
         except Exception:

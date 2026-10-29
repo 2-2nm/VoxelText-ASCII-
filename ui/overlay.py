@@ -1,8 +1,7 @@
-from PySide6.QtCore import Qt, Signal
-from PySide6.QtGui import QFont
-from PySide6.QtWidgets import QWidget, QFrame, QLabel, QPushButton, QHBoxLayout
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QLabel, QWidget
 
-from game.manager import make_overlay_window, place_overlay_window, hide_overlay_window
+from game.manager import hide_overlay_window, make_overlay_window, place_overlay_window
 
 
 class GameOverlayWindow(QWidget):
@@ -23,6 +22,10 @@ class GameOverlayWindow(QWidget):
         self._visible = False
         self._last_rect = None
         self.create()
+
+    @property
+    def is_shown(self):
+        return self._visible
 
     def resizeEvent(self, event):
         super().resizeEvent(event)
@@ -47,82 +50,3 @@ class GameOverlayWindow(QWidget):
             hide_overlay_window(int(self.winId()))
             self._visible = False
             self._last_rect = None
-
-
-class SegmentedButton(QFrame):
-    valueChanged = Signal(str)
-
-    def __init__(self, items, default=None, selected_color="#D5DBE6", unselected_color="#1C2028", text_selected="#08090C", text_unselected="#E6E8EE", parent=None):
-        super().__init__(parent)
-        self.items = items
-        self.selected_value = default or (items[0] if items else "")
-        self.buttons = {}
-        self.selected_color = selected_color
-        self.unselected_color = unselected_color
-        self.text_selected = text_selected
-        self.text_unselected = text_unselected
-
-        self.layout = QHBoxLayout(self)
-        self.layout.setContentsMargins(2, 2, 2, 2)
-        self.layout.setSpacing(2)
-        self.setStyleSheet("background-color: transparent; border: none;")
-
-        for item in self.items:
-            btn = QPushButton(item)
-            btn.setFixedHeight(22)
-            btn.setFont(QFont("Consolas", 9, QFont.Bold))
-            btn.clicked.connect(lambda checked=False, val=item: self.set(val, emit=True))
-            self.layout.addWidget(btn)
-            self.buttons[item] = btn
-
-        self.update_states()
-
-    def set_colors(self, selected_color, unselected_color, text_selected, text_unselected):
-        self.selected_color = selected_color
-        self.unselected_color = unselected_color
-        self.text_selected = text_selected
-        self.text_unselected = text_unselected
-        self.update_states()
-
-    def set(self, value, emit=False):
-        if value in self.buttons:
-            self.selected_value = value
-            self.update_states()
-            if emit:
-                self.valueChanged.emit(value)
-
-    def get(self):
-        return self.selected_value
-
-    def update_states(self):
-        for val, btn in self.buttons.items():
-            if val == self.selected_value:
-                btn.setStyleSheet(f"""
-                    QPushButton {{
-                        background-color: {self.selected_color};
-                        color: {self.text_selected};
-                        border: none;
-                        border-radius: 11px;
-                        padding: 2px 10px;
-                        font-weight: bold;
-                    }}
-                """)
-            else:
-                btn.setStyleSheet(f"""
-                    QPushButton {{
-                        background-color: {self.unselected_color};
-                        color: {self.text_unselected};
-                        border: none;
-                        border-radius: 11px;
-                        padding: 2px 10px;
-                        font-weight: bold;
-                    }}
-                    QPushButton:hover {{
-                        background-color: #2A2F3A;
-                    }}
-                """)
-
-    def setEnabled(self, enabled):
-        super().setEnabled(enabled)
-        for btn in self.buttons.values():
-            btn.setEnabled(enabled)

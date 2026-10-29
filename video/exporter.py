@@ -25,6 +25,7 @@ def export_ascii_video(
     output_path,
     target_cols=85,
     color_mode="Color",
+    palette_hex="#E2E8F0",
     fullcolor_style="Blocky",
     transparent_target="black",
     theme_bg_color="#0F111A",
@@ -85,7 +86,7 @@ def export_ascii_video(
     prog1['u_num_chars'].value = num_chars
     prog1['u_color_mode'].value = 1 if color_mode == "Color" else 0
     prog1['u_bg_color'].value = hex_to_rgb_float(theme_bg_color)
-    prog1['u_text_color'].value = (226 / 255.0, 232 / 255.0, 240 / 255.0)
+    prog1['u_text_color'].value = hex_to_rgb_float(palette_hex)
 
     render_tex = ctx.texture((win_w, win_h), 3)
     render_tex.filter = (moderngl.LINEAR_MIPMAP_LINEAR, moderngl.LINEAR)

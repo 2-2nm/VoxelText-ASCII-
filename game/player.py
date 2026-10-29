@@ -26,7 +26,9 @@ class GPUAsciiGamePlayer:
         update_fps_cb=None,
         log_cb=None,
         tone=1.0,
-        color_boost=0.6
+        color_boost=0.6,
+        palette_hex_provider_fn=None,
+        palette_hex="#E2E8F0"
     ):
         self.hwnd = hwnd
         self.width_provider_fn = width_provider_fn
@@ -35,6 +37,8 @@ class GPUAsciiGamePlayer:
         self.transparency_provider_fn = transparency_provider_fn
         self.transparent_target = transparent_target
         self.color_mode = color_mode
+        self.palette_hex_provider_fn = palette_hex_provider_fn
+        self.palette_hex = palette_hex
         self.fullcolor_style = fullcolor_style
         self.theme_bg_color = theme_bg_color
         self.update_ui_cb = update_ui_cb
@@ -93,7 +97,8 @@ class GPUAsciiGamePlayer:
         set_glyph_coverage(prog1, atlas_img, num_chars, self.char_w)
         prog1['u_color_mode'].value = 1 if current_color_mode == "Color" else 0
         prog1['u_bg_color'].value = hex_to_rgb_float(self.theme_bg_color)
-        prog1['u_text_color'].value = (226 / 255.0, 232 / 255.0, 240 / 255.0)
+        current_palette = self.palette_hex_provider_fn() if self.palette_hex_provider_fn else self.palette_hex
+        prog1['u_text_color'].value = hex_to_rgb_float(current_palette)
         prog1['u_tone'].value = float(self.tone)
         prog1['u_color_boost'].value = self._color_boost_for(current_style, current_color_mode)
 
@@ -172,6 +177,12 @@ class GPUAsciiGamePlayer:
                 new_color_mode = self.color_mode_provider_fn() if self.color_mode_provider_fn else self.color_mode
                 new_transparency = self.transparency_provider_fn() if self.transparency_provider_fn else self.transparent_target
 
+                new_palette = self.palette_hex_provider_fn() if self.palette_hex_provider_fn else self.palette_hex
+                if new_palette != current_palette:
+                    current_palette = new_palette
+                    prog1['u_text_color'].value = hex_to_rgb_float(current_palette)
+                    dirty = True
+
                 new_charset = get_charset()
                 if new_style != current_style or new_color_mode != current_color_mode or new_transparency != current_transparency or new_charset != current_charset:
                     current_style = new_style
@@ -220,6 +231,7 @@ class GPUAsciiGamePlayer:
                     sf = min(max_ui_w / float(win_w), max_ui_h / float(win_h))
                     ui_w = max(1, int(round(win_w * sf)))
                     ui_h = max(1, int(round(win_h * sf)))
+
                     if sf < 0.5:
                         win_w = max(ui_w * 2, effective_cols)
                         win_h = max(ui_h * 2, grid_rows)

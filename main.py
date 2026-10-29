@@ -30,7 +30,7 @@ def main():
         description="VoxelText - High-performance GPU ASCII Art Generator & Video Converter"
     )
     parser.add_argument(
-        "--version", "-v", action="version", version="VoxelText v3.0.0"
+        "--version", "-v", action="version", version="VoxelText v4.0.0"
     )
     parser.add_argument(
         "--image", "-i", type=str, help="Input image file path for CLI ASCII conversion"
@@ -68,7 +68,17 @@ def main():
     from PySide6.QtWidgets import QApplication
     from ui.gui import AsciiArtAppPySide6
 
-    app = QApplication(sys.argv)
+    app_class = QApplication
+    if os.environ.get("VOXELTEXT_DEBUG"):
+        from core.uidebug import make_app_class
+        app_class = make_app_class(float(os.environ.get("VOXELTEXT_STALL_MS", "12")))
+        print("[debug] UI stall profiler on (VOXELTEXT_DEBUG=1)")
+    app = app_class(sys.argv)
+    from PySide6.QtCore import Qt
+    if os.environ.get("VOXELTEXT_STYLE"):
+        app.setStyle(os.environ["VOXELTEXT_STYLE"])
+    for effect in (Qt.UI_AnimateCombo, Qt.UI_FadeMenu, Qt.UI_AnimateMenu, Qt.UI_FadeTooltip, Qt.UI_AnimateTooltip):
+        app.setEffectEnabled(effect, False)
     app.setApplicationName("VoxelText")
     app.setOrganizationName("VoxelText Engine")
 

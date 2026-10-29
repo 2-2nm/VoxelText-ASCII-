@@ -25,7 +25,9 @@ class GPUAsciiVideoPlayer:
         theme_bg_color="#0F111A",
         audio_player=None,
         update_ui_cb=None,
-        update_time_cb=None
+        update_time_cb=None,
+        palette_hex_provider_fn=None,
+        palette_hex="#E2E8F0"
     ):
         self.video_path = video_path
         self.width_provider_fn = width_provider_fn
@@ -34,6 +36,8 @@ class GPUAsciiVideoPlayer:
         self.transparency_provider_fn = transparency_provider_fn
         self.transparent_target = transparent_target
         self.color_mode = color_mode
+        self.palette_hex_provider_fn = palette_hex_provider_fn
+        self.palette_hex = palette_hex
         self.fullcolor_style = fullcolor_style
         self.theme_bg_color = theme_bg_color
         self.audio_player = audio_player
@@ -94,7 +98,8 @@ class GPUAsciiVideoPlayer:
         set_glyph_coverage(prog1, atlas_img, num_chars, self.char_w)
         prog1['u_color_mode'].value = 1 if current_color_mode == "Color" else 0
         prog1['u_bg_color'].value = hex_to_rgb_float(self.theme_bg_color)
-        prog1['u_text_color'].value = (226 / 255.0, 232 / 255.0, 240 / 255.0)
+        current_palette = self.palette_hex_provider_fn() if self.palette_hex_provider_fn else self.palette_hex
+        prog1['u_text_color'].value = hex_to_rgb_float(current_palette)
 
         current_grid_cols = -1
         current_ui_w, current_ui_h = -1, -1
@@ -166,6 +171,11 @@ class GPUAsciiVideoPlayer:
                 new_style = self.style_provider_fn() if self.style_provider_fn else self.fullcolor_style
                 new_color_mode = self.color_mode_provider_fn() if self.color_mode_provider_fn else self.color_mode
                 new_transparency = self.transparency_provider_fn() if self.transparency_provider_fn else self.transparent_target
+
+                new_palette = self.palette_hex_provider_fn() if self.palette_hex_provider_fn else self.palette_hex
+                if new_palette != current_palette:
+                    current_palette = new_palette
+                    prog1['u_text_color'].value = hex_to_rgb_float(current_palette)
 
                 new_charset = get_charset()
                 if new_style != current_style or new_color_mode != current_color_mode or new_transparency != current_transparency or new_charset != current_charset:
