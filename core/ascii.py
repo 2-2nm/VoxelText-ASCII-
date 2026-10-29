@@ -23,13 +23,13 @@ FRAGMENT_SHADER_PASS1 = """
 uniform sampler2D u_frame;
 uniform sampler2D u_atlas;
 uniform vec2 u_grid_size;
-uniform vec2 u_cell_px;        // render pixels per cell. (0,0) = legacy glyph-only.
-uniform float u_glyph_cov[32]; // mean ink coverage per glyph (used when cells are tiny)
-uniform vec2 u_frame_size;     // (0,0) = point sampling (legacy). Else area-average via mipmaps.
+uniform vec2 u_cell_px;
+uniform float u_glyph_cov[32];
+uniform vec2 u_frame_size;
 uniform int u_num_chars;
 uniform int u_color_mode;
-uniform float u_tone;          // 0 = legacy linear. 1 = lift shadows + fade dark glyphs.
-uniform float u_color_boost;   // 0 = raw pixel colour. 1 = full-brightness hue (density carries brightness).
+uniform float u_tone;
+uniform float u_color_boost;
 uniform vec3 u_text_color;
 uniform vec3 u_bg_color;
 
@@ -65,8 +65,6 @@ void main() {
 
     float mask = texture(u_atlas, vec2(u_char, v_char)).r;
     if (u_cell_px.x > 0.0) {
-        // Below ~3px per cell a glyph cannot be resolved: sampling it just aliases into stripes.
-        // Use the glyph's average coverage instead (what a proper downscale would produce).
         float detail = smoothstep(2.5, 6.0, u_cell_px.x);
         mask = mix(u_glyph_cov[char_idx], mask, detail);
     }
@@ -163,7 +161,7 @@ def generate_glyph_atlas_image(ascii_chars, char_w=7, char_h=12):
 
 _RAMP_CANDIDATES = " .'`^\",:;Il!i><~+_-?][}{1)(|\\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$"
 
-MAX_GLYPHS = 32  
+MAX_GLYPHS = 32
 
 CHARSETS = {
     "Standard": ("auto", 16),
